@@ -15,7 +15,7 @@ class GameState:
         ]
         self.moveFunctions = {'P': self.getPawnMoves, 'R': self.getRookMoves, 'H': self.getHorseMoves, 'B': self.getBishopMoves, 'Q': self.getQueenMoves, 'K': self.getKingMoves}
         self.whiteToMove = True                                                                                         # white will always start first
-        self.moveLog = []                                                                                               # keep track of the moves you made for undo purposes
+        self.histLog = []                                                                                               # keep track of the moves you made for undo purposes
         self.whiteKingLocation = (7, 4)                                                                                 # coords for the white king
         self.blackKingLocation = (0, 4)                                                                                 # coords for the black king
         self.checkMate = False                                                                                          # check with this if king is in checkmate
@@ -29,7 +29,7 @@ class GameState:
     def makeMove(self, move):
         self.board[move.startRow][move.startCol] = '--'                                                                 # replaces the original square with blank square
         self.board[move.endRow][move.endCol] = move.pieceMoved                                                          # replaces destination square with the piece
-        self.moveLog.append(move)                                                                                       # registers moves for undo purposes
+        self.histLog.append(move)                                                                                       # registers moves for undo purposes
         self.whiteToMove = not self.whiteToMove                                                                         # swap players
         if move.pieceMoved == 'wK':                                                                                     # update king coords if need be
             self.whiteKingLocation = (move.endRow, move.endCol)
@@ -55,8 +55,8 @@ class GameState:
         self.castleRightLog.append(CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks, self.currentCastlingRight.wqs, self.currentCastlingRight.bqs))
 
     def undoMove(self):                                                                                                 # undo
-        if len(self.moveLog) != 0:                                                                                      # check if log has moves to undo
-            move = self.moveLog.pop()                                                                                   # then will remove the move made from the moveLog
+        if len(self.histLog) != 0:                                                                                      # check if log has moves to undo
+            move = self.histLog.pop()                                                                                   # then will remove the move made from the histLog
             self.board[move.startRow][move.startCol] = move.pieceMoved                                                  # move back the piece you moved
             self.board[move.endRow][move.endCol] = move.pieceCaptured                                                   # replace the piece you captured
             self.whiteToMove = not self.whiteToMove                                                                     # switches turns to original
@@ -99,10 +99,8 @@ class GameState:
             self.undoMove()                                                                                             # undo the move on the board
         if len(moves) == 0:                                                                                             # it means there are no valid moves to make then you're either in check or in stalemate
             if self.inCheck():
-                print("CHECK MATE! " + ('White' if not self.whiteToMove else 'Black') + " wins")
                 self.checkMate = True
             else:
-                print("DRAW DUE TO STALEMATE")
                 self.staleMate = True
         else:
             self.checkMate = False                                                                                      # in case you want to undo a move, reset the value back to False
@@ -338,11 +336,11 @@ class Move:
         endSQR = self.getRankFile(self.endRow, self.endCol)
         if self.pieceMoved[1] == 'P':
             if self.isCaptured:
-                return self.ColFile[self.startCol] + "x" + endSQR
+                return self.ColFile[self.startCol] + "X" + endSQR
             else:
                 return endSQR
 
         moveIndex = self.pieceMoved[1]
         if self.isCaptured:
-            moveIndex += 'x'
+            moveIndex += 'X'
         return moveIndex + endSQR
