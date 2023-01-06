@@ -13,7 +13,7 @@ class GameState:
             ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
             ['wR', 'wH', 'wB', 'wQ', 'wK', 'wB', 'wH', 'wR'],
         ]
-        self.moveFunctions = {'P': self.getPawnMoves, 'R': self.getRookMoves, 'H': self.getHorseMoves, 'B': self.getBishopMoves, 'Q': self.getQueenMoves, 'K': self.getKingMoves}
+        self.moveFunctions = {'P': self.getPawnMoves, 'R': self.getRookMoves, 'H': self.getKnightMoves, 'B': self.getBishopMoves, 'Q': self.getQueenMoves, 'K': self.getKingMoves}
         self.whiteToMove = True                                                                                         # white will always start first
         self.histLog = []                                                                                               # keep track of the moves you made for undo purposes
         self.whiteKingLocation = (7, 4)                                                                                 # coords for the white king
@@ -187,7 +187,7 @@ class GameState:
                 else:
                     break
 
-    def getHorseMoves(self, r, c, moves):
+    def getKnightMoves(self, r, c, moves):
         directions = ((-2, -1), (-2, 1), (-1, -2), (-1, 2,), (1, -2), (1, 2), (2, -1), (2, 1))
         allyColor = 'w' if self.whiteToMove else 'b'
         for d in directions:

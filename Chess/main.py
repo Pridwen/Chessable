@@ -3,12 +3,13 @@ import Engine
 import AI
 import button
 import os
+import sys
 
 x = 300
 y = 100
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x, y)
 p.init()
-p.display.set_caption("Chessable")
+p.display.set_caption("Chessable Project")
 
 board_width = board_height = hist_log_height = 832                                                                      # size of chess board
 hist_log_width = 250                                                                                                    # sizes of history log
@@ -63,7 +64,6 @@ nr5 = coordnrfont.render('5', False, p.Color('Dark Red'))
 nr6 = coordnrfont.render('6', False, p.Color('Dark Red'))
 nr7 = coordnrfont.render('7', False, p.Color('Dark Red'))
 nr8 = coordnrfont.render('8', False, p.Color('Dark Red'))
-
 
 
 def loadImages():
@@ -168,6 +168,10 @@ def drawBoard(screen):
         for c in range(size):
             color = colors[(r + c) % 2]
             p.draw.rect(screen, color, p.Rect(sqr * c, sqr * r, sqr, sqr))
+    drawCoords(screen)
+
+
+def drawCoords(screen):
     screen.blit(coordA, (85, 725))
     screen.blit(coordB, (185, 725))
     screen.blit(coordC, (290, 725))
@@ -251,7 +255,9 @@ def main():
             run = False
         for event in p.event.get():
             if event.type == p.QUIT:
-                run = False
+                # print("Check Menu")
+                p.quit()
+                sys.exit()
         p.display.update()
 
     screen = p.display.set_mode((board_width + hist_log_width, board_width))
@@ -273,7 +279,9 @@ def main():
         playerTurn = (game.whiteToMove and playerWhite) or (not game.whiteToMove and playerBlack)
         for e in p.event.get():
             if e.type == p.QUIT:
-                running = False
+                # print("Check Main")
+                p.quit()
+                sys.exit()
             elif e.type == p.MOUSEBUTTONDOWN:
                 if not gameOver and playerTurn:
                     location = p.mouse.get_pos()                                                                        # x, y coords of mouse
@@ -296,18 +304,10 @@ def main():
                                     playerClicks = []
                             if not moveMade:
                                 playerClicks = [currSqr]
-            elif e.type == p.KEYDOWN:
+            elif e.type == p.KEYDOWN and playerWhite and playerBlack:
                 if e.key == p.K_z:                                                                                      # undo a move when you press z
                     game.undoMove()
                     moveMade = True
-                    animation = False
-                    gameOver = False
-                if e.key == p.K_x:                                                                                      # resets the game when you press x
-                    game = Engine.GameState()
-                    validMoves = game.getValidMoves()
-                    currSqr = ()
-                    playerClicks = []
-                    moveMade = False
                     animation = False
                     gameOver = False
         if not gameOver and not playerTurn:
@@ -332,7 +332,7 @@ def main():
                 drawText(screen, 'Checkmate,White Wins')
         elif game.staleMate:
             gameOver = True
-            drawText(screen, 'Stalemate due to insufficient material')
+            drawText(screen, 'Draw / Stalemate due to insufficient material')
         clock.tick(fps)
         p.display.flip()
 

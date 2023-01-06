@@ -5,9 +5,11 @@ Score = {'K': 0, "P": 1, "H": 3, "B": 3, "R": 5, "Q": 9}                        
 CHECKMATE = 100                                                                                                         # if you lead to checkmate you win
 STALEMATE = 0                                                                                                           # if you're winning you'll try to avoid getting 0, if you're losing you'll try to get 0 or higher
 DEPTH = 2                                                                                                               # nr of moves AI thinks ahead
+alpha = -10000
+beta = 10000
 
 
-def findRandomMove(validMoves):                                                                                         # returns a random move
+def findRandomMove(validMoves):                                                                                         # returns a random move in case all yield equal advantage
     if len(validMoves) > 0:
         return validMoves[random.randint(0, len(validMoves) - 1)]
 
@@ -15,29 +17,29 @@ def findRandomMove(validMoves):                                                 
 def aiMove(game, validMoves):                                                                                           # finds the next best move
     global nextMove                                                                                                     # stores the next move here
     nextMove = None
-    random.shuffle(validMoves)                                                                                          # bug found, randomizing moves seems to do the trick
+    random.shuffle(validMoves)                                                                                          ######## bug found, randomizing moves seems to do the trick, find out why
     AlphaBetaPruning(game, validMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if game.whiteToMove else -1)                     # uses AlphaBetaPruning
     return nextMove                                                                                                     # returns the next best move
 
 
-def AlphaBetaPruning(game, validMoves, depth, alpha, beta, turnMultiplier):
+def AlphaBetaPruning(game, validMoves, depth, alph, bet, turnMultiplier):
     global nextMove
     if depth == 0:
         return turnMultiplier * boardScore(game)
     maxScore = -CHECKMATE                                                                                               # start from the bottom
     for move in validMoves:                                                                                             # looks at all moves ahead by depth and makes them
-        game.makeMove(move)
+        game.makeMove(move)                                                                                             # makes current move on the board
         nextMoves = game.getValidMoves()
-        score = -AlphaBetaPruning(game, nextMoves, depth-1, -beta, -alpha, -turnMultiplier)                             # each move will have a score by adding all pieces left on the board
+        score = -AlphaBetaPruning(game, nextMoves, depth-1, -bet, -alph, -turnMultiplier)                               # each move will have a score by adding all pieces left on the board
         if score > maxScore:
             maxScore = score
-            if depth == DEPTH:
+            if depth == DEPTH:                                                                                          # new best move
                 nextMove = move
-        game.undoMove()
+        game.undoMove()                                                                                                 # undo current move on the board
         if maxScore > alpha:
-            alpha = maxScore
-        if alpha >= beta:
-            break
+            alph = maxScore                                                                                             # new alpha
+        if alph >= bet:
+            break                                                                                                       # pruning
     return maxScore
 
 
