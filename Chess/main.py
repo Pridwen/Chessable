@@ -1,5 +1,6 @@
 import pygame as p
-import Engine
+import Chess_Engine
+import Siege_Engine
 import AI
 import button
 import os
@@ -30,11 +31,17 @@ CastAI = menu_font.render("Vs AI: Castling Disabled", True, p.Color("Dark Red"))
 CastHum = menu_font.render("Vs Human: Castling Enabled", True, p.Color("Dark Red"))
 whitePlayer_img = p.image.load('Menu/White.png').convert_alpha()                                                        # img for white pieces
 blackPlayer_img = p.image.load('Menu/Black.png').convert_alpha()                                                        # img for black pieces
+how_to = p.image.load('Menu/How to.png').convert_alpha()
+Siege = p.image.load('Menu/Siege.png').convert_alpha()
+Arrow = p.image.load('Menu/Arrow.png').convert_alpha()
 start = p.image.load('Menu/Start.png').convert_alpha()                                                                  # img for start button
 logo = p.image.load("Menu/Logo.png")                                                                                    # logo for menu
 white = button.Button(100, 300, whitePlayer_img, 0.6)                                                                   # white button
 black = button.Button(470, 300, blackPlayer_img, 0.6)                                                                   # black button
+how_to = button.Button(700, 30, how_to, 0.4)
+Siege = button.Button(30, 30, Siege, 0.25)
 start = button.Button(340, 430, start, 0.45)                                                                            # start button
+Arrow = button.Button(200, 200, Arrow, 0.6)
 miniwP = p.image.load("Mini/wP.png")
 minibP = p.image.load("Mini/bP.png")
 miniwR = p.image.load("Mini/wR.png")
@@ -64,6 +71,7 @@ nr5 = coordnrfont.render('5', False, p.Color('Dark Red'))
 nr6 = coordnrfont.render('6', False, p.Color('Dark Red'))
 nr7 = coordnrfont.render('7', False, p.Color('Dark Red'))
 nr8 = coordnrfont.render('8', False, p.Color('Dark Red'))
+
 
 
 def loadImages():
@@ -230,14 +238,32 @@ def animateMove(move, screen, board, clock):
 def main():
     playerBlack = False
     playerWhite = False
-    run = True
-    while run:
+    run_menu = True
+    SiegeCheck = 0
+    counterBlack = 1
+    counterWhite = 1
+    while run_menu:
         menu.fill(p.Color("Dark Blue"))
         menu.blit(logo, (290, 20))
         menu.blit(aiW, (160, 270))
         menu.blit(aiB, (530, 270))
         if white.draw(menu):
             playerWhite = True
+            counterWhite += 1
+            if counterWhite % 2 != 0:
+                playerWhite = False
+        if black.draw(menu):
+            playerBlack = True
+            counterBlack += 1
+            if counterBlack % 2 != 0:
+                playerBlack = False
+        if start.draw(menu):
+            run_menu = False
+        if Siege.draw(menu):
+            SiegeCheck = 1
+            print(SiegeCheck)
+        if how_to.draw(menu):
+            print('AYA')
         if playerWhite:
             menu.fill(p.Color("Dark Blue"), (130, 270, 200, 30))
             menu.blit(humW, (130, 270))
@@ -249,10 +275,6 @@ def main():
         if playerBlack and playerWhite:
             menu.fill(p.Color("Dark Blue"), (270, 230, 290, 30))
             menu.blit(CastHum, (260, 230))
-        if black.draw(menu):
-            playerBlack = True
-        if start.draw(menu):
-            run = False
         for event in p.event.get():
             if event.type == p.QUIT:
                 # print("Check Menu")
@@ -266,7 +288,11 @@ def main():
     screen.fill(p.Color('white'))
     histLogFont = p.font.SysFont("Helvetica", 21, True, False)
 
-    game = Engine.GameState()
+    # game = Chess_Engine.GameState()
+    if SiegeCheck == 0:
+        game = Chess_Engine.GameState()
+    elif SiegeCheck == 1:
+        game = Siege_Engine.GameState()
     validMoves = game.getValidMoves()
     moveMade = False
     animation = False
@@ -293,8 +319,11 @@ def main():
                     else:
                         currSqr = (row, col)
                         playerClicks.append(currSqr)                                                                 # adds 1st and 2nd click
-                        if len(playerClicks) == 2:                                                                      # after the 2nd click these happen
-                            move = Engine.Move(playerClicks[0], playerClicks[1], game.board)
+                        if len(playerClicks) == 2:                                                                     # after the 2nd click these happen
+                            if SiegeCheck == 1:
+                                move = Siege_Engine.Move(playerClicks[0], playerClicks[1], game.board)
+                            elif SiegeCheck == 0:
+                                move = Chess_Engine.Move(playerClicks[0], playerClicks[1], game.board)
                             for i in range(len(validMoves)):
                                 if move == validMoves[i]:
                                     game.makeMove(validMoves[i])
@@ -332,7 +361,7 @@ def main():
                 drawText(screen, 'Checkmate,White Wins')
         elif game.staleMate:
             gameOver = True
-            drawText(screen, 'Draw / Stalemate due to insufficient material')
+            drawText(screen, 'Stalemate due to insufficient material')
         clock.tick(fps)
         p.display.flip()
 
