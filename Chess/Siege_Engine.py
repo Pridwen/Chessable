@@ -5,15 +5,15 @@ class GameState:
         # R = rook , H = horse , B = bishop , Q = queen , K = king , P = pawn
         self.board = [
             ['bR', 'bH', 'bB', 'bQ', 'bK', 'bB', 'bH', 'bR'],
-            ['bP', 'bP', "bP", "bP", "bP", "bP", "bP", "bP"],
+            ['bP', 'bC', "bP", "bP", "bP", "bP", "bP", "bP"],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
             ['wP', '--', '--', '--', '--', '--', '--', '--'],
-            ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
+            ['wP', 'wC', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
             ['wR', 'wH', 'wB', 'wQ', 'wK', 'wB', 'wH', 'wR'],
         ]
-        self.moveFunctions = {'P': self.getPawnMoves, 'R': self.getRookMoves, 'H': self.getKnightMoves, 'B': self.getBishopMoves, 'Q': self.getQueenMoves, 'K': self.getKingMoves}
+        self.moveFunctions = {'P': self.getPawnMoves, 'R': self.getRookMoves, 'H': self.getKnightMoves, 'B': self.getBishopMoves, 'Q': self.getQueenMoves, 'K': self.getKingMoves, 'C': self.getCatapultMoves}
         self.whiteToMove = True                                                                                         # white will always start first
         self.histLog = []                                                                                               # keep track of the moves you made for undo purposes
         self.whiteKingLocation = (7, 4)                                                                                 # coords for the white king
@@ -192,6 +192,9 @@ class GameState:
 
     def getQueenMoves(self, r, c, moves):
         self.getRookMoves(r, c, moves)
+        self.getBishopMoves(r, c, moves)
+
+    def getCatapultMoves(self, r, c, moves):
         self.getBishopMoves(r, c, moves)
 
     def getKingMoves(self, r, c, moves):

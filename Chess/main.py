@@ -5,7 +5,13 @@ import AI
 import button
 import os
 import sys
+import time
+from pygame import mixer
 
+mixer.init()
+mixer.music.load("Songs&Sounds/MitiS.mp3")
+mixer.music.set_volume(0.15)
+mixer.music.play(-1)
 x = 300
 y = 100
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x, y)
@@ -38,8 +44,8 @@ start = p.image.load('Menu/Start.png').convert_alpha()                          
 logo = p.image.load("Menu/Logo.png")                                                                                    # logo for menu
 white = button.Button(100, 300, whitePlayer_img, 0.6)                                                                   # white button
 black = button.Button(470, 300, blackPlayer_img, 0.6)                                                                   # black button
-how_to = button.Button(700, 30, how_to, 0.4)
-Siege = button.Button(30, 30, Siege, 0.25)
+how_to = button.Button(650, 50, how_to, 0.5)
+Siege = button.Button(30, 30, Siege, 0.4)
 start = button.Button(340, 430, start, 0.45)                                                                            # start button
 Arrow = button.Button(200, 200, Arrow, 0.6)
 miniwP = p.image.load("Mini/wP.png")
@@ -47,6 +53,7 @@ minibP = p.image.load("Mini/bP.png")
 miniwR = p.image.load("Mini/wR.png")
 minibR = p.image.load("Mini/bR.png")
 miniwH = p.image.load("Mini/wH.png")
+miniwC = p.image.load("Mini/wC.png")
 minibH = p.image.load("Mini/bH.png")
 miniwB = p.image.load("Mini/wB.png")
 minibB = p.image.load("Mini/bB.png")
@@ -54,6 +61,7 @@ miniwQ = p.image.load("Mini/wQ.png")
 minibQ = p.image.load("Mini/bQ.png")
 miniwK = p.image.load("Mini/wK.png")
 minibK = p.image.load("Mini/bK.png")
+minibC = p.image.load("Mini/bC.png")
 coordnrfont = p.font.SysFont('Verdana', 24, True, False)
 coordA = coordnrfont.render('a', False, p.Color('Dark Red'))
 coordB = coordnrfont.render('b', False, p.Color('Dark Red'))
@@ -75,7 +83,7 @@ nr8 = coordnrfont.render('8', False, p.Color('Dark Red'))
 
 
 def loadImages():
-    pieces = ['wP', 'wR', 'wH', 'wB', 'wQ', 'wK', 'bP', 'bR', 'bH', 'bB', 'bQ', 'bK']
+    pieces = ['wP', 'wR', 'wH', 'wB', 'wQ', 'wK', 'bP', 'bR', 'bH', 'bB', 'bQ', 'bK', 'wC', 'bC']
     for piece in pieces:
         imgs[piece] = p.image.load("Piece/" + piece + ".png")
 
@@ -121,6 +129,8 @@ def drawMoveLog(screen, game, font):
                 piece = miniwQ
             elif text[8] == 'K':
                 piece = miniwK
+            elif text[8] == 'C':
+                piece = miniwC
             else:
                 piece = miniwP
         elif game.whiteToMove:
@@ -134,6 +144,8 @@ def drawMoveLog(screen, game, font):
                 piece = minibQ
             elif text[25] == 'K' or text[26] == 'K' or text[27] == 'K':
                 piece = minibK
+            elif text[25] == 'C' or text[26] == 'C' or text[27] == 'C':
+                piece = minibC
             else:
                 piece = minibP
         textObject = font.render(text, False, p.Color('Dark Red'))
@@ -201,8 +213,8 @@ def drawCoords(screen):
 def highlight(screen, game, validMoves, currSqr):
     if currSqr != ():
         r, c = currSqr
-        if game.board[r][c][0] == ('w' if game.whiteToMove else 'b'):                                                       # currSqr is a moveable piece
-            s = p.Surface((sqr, sqr))                                                                           # highlight square
+        if game.board[r][c][0] == ('w' if game.whiteToMove else 'b'):                                                   # currSqr is a moveable piece
+            s = p.Surface((sqr, sqr))                                                                                   # highlight square
             s.set_alpha(55)
             s.fill(p.Color('Red'))
             screen.blit(s, (c*sqr, r*sqr))
@@ -242,6 +254,7 @@ def main():
     SiegeCheck = 0
     counterBlack = 1
     counterWhite = 1
+    checkGameOver = 0
     while run_menu:
         menu.fill(p.Color("Dark Blue"))
         menu.blit(logo, (290, 20))
@@ -260,8 +273,8 @@ def main():
         if start.draw(menu):
             run_menu = False
         if Siege.draw(menu):
+            print("sige")
             SiegeCheck = 1
-            print(SiegeCheck)
         if how_to.draw(menu):
             print('AYA')
         if playerWhite:
@@ -277,18 +290,14 @@ def main():
             menu.blit(CastHum, (260, 230))
         for event in p.event.get():
             if event.type == p.QUIT:
-                # print("Check Menu")
                 p.quit()
                 sys.exit()
         p.display.update()
-
     screen = p.display.set_mode((board_width + hist_log_width, board_width))
-    # screen.blit()
     clock = p.time.Clock()
     screen.fill(p.Color('white'))
     histLogFont = p.font.SysFont("Helvetica", 21, True, False)
-
-    # game = Chess_Engine.GameState()
+    mixer.music.pause()
     if SiegeCheck == 0:
         game = Chess_Engine.GameState()
     elif SiegeCheck == 1:
@@ -297,11 +306,11 @@ def main():
     moveMade = False
     animation = False
     loadImages()
-    running = True
+    run_game = True
     currSqr = ()
     playerClicks = []                                                                                                   # log of player clicks in tuple form
     gameOver = False
-    while running:
+    while run_game:
         playerTurn = (game.whiteToMove and playerWhite) or (not game.whiteToMove and playerBlack)
         for e in p.event.get():
             if e.type == p.QUIT:
@@ -327,6 +336,9 @@ def main():
                             for i in range(len(validMoves)):
                                 if move == validMoves[i]:
                                     game.makeMove(validMoves[i])
+                                    capture = mixer.Sound("Songs&Sounds/Capture.wav")
+                                    capture.set_volume(0.05)
+                                    mixer.find_channel(True).play(capture)
                                     moveMade = True
                                     animation = True
                                     currSqr = ()
@@ -355,13 +367,18 @@ def main():
         drawGameState(screen, game, validMoves, currSqr, histLogFont)
         if game.checkMate:
             gameOver = True
-            if game.whiteToMove:
-                drawText(screen, 'Checkmate,Black Wins')
-            else:
-                drawText(screen, 'Checkmate,White Wins')
+            if checkGameOver == 1 and game.whiteToMove:
+                drawText(screen, 'Checkmate, Black Wins')
+            elif checkGameOver == 1 and not game.whiteToMove:
+                drawText(screen, 'Checkmate, White Wins')
+            elif checkGameOver == 0:
+                trumpets = mixer.Sound("Songs&Sounds/Trumpets.wav")
+                trumpets.set_volume(0.1)
+                trumpets.play(0)
+                checkGameOver = 1
         elif game.staleMate:
             gameOver = True
-            drawText(screen, 'Stalemate due to insufficient material')
+            drawText(screen, 'Draw / Stalemate ')
         clock.tick(fps)
         p.display.flip()
 
