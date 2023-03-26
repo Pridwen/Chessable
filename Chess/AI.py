@@ -1,7 +1,7 @@
 import random
 
 
-Score = {'K': 0, "P": 1, "H": 3, "B": 3, "R": 5, "Q": 9}                                                                # per piece there's a score,king = 0, as no one can actually take the king
+Score = {'K': 0, "P": 1, "H": 3, "B": 3, "L": 4, "R": 5, "C": 7, "Q": 9}                                                                # per piece there's a score,king = 0, as no one can actually take the king
 CHECKMATE = 100                                                                                                         # if you lead to checkmate you win
 STALEMATE = 0                                                                                                           # if you're winning you'll try to avoid getting 0, if you're losing you'll try to get 0 or higher
 DEPTH = 2                                                                                                               # nr of moves AI thinks ahead

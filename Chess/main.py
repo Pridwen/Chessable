@@ -10,13 +10,13 @@ from pygame import mixer
 
 mixer.init()
 mixer.music.load("Songs&Sounds/MitiS.mp3")
-mixer.music.set_volume(0.15)
+mixer.music.set_volume(0.05)
 mixer.music.play(-1)
 x = 300
 y = 100
 os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x, y)
 p.init()
-p.display.set_caption("Chessable Project")
+p.display.set_caption("Chessable App")
 
 board_width = board_height = hist_log_height = 832                                                                      # size of chess board
 hist_log_width = 250                                                                                                    # sizes of history log
@@ -25,35 +25,47 @@ sqr = board_width // size                                                       
 fps = 60                                                                                                                # FPS cap
 imgs = {}
 
-menu_height = 500                                                                                                       # sizes of menu
+menu_height = 500
 menu_width = 800
 menu = p.display.set_mode((menu_width, menu_height))
-menu_font = p.font.SysFont('Verdana', 21, True, False)                                                                  # set menu font
+menu_font = p.font.SysFont('Verdana', 21, True, False)
+
+whitePlayer_img = p.image.load('Menu/White.png').convert_alpha()
+blackPlayer_img = p.image.load('Menu/Black.png').convert_alpha()
+white = button.Button(100, 300, whitePlayer_img, 0.6)
+black = button.Button(470, 300, blackPlayer_img, 0.6)
 humW = menu_font.render("White is Human", True, p.Color("Dark Red"))
 humB = menu_font.render("Black is Human", True, p.Color("Dark Red"))
 aiW = menu_font.render("White is AI", True, p.Color("Dark Red"))
 aiB = menu_font.render("Black is AI", True, p.Color("Dark Red"))
 CastAI = menu_font.render("Vs AI: Castling Disabled", True, p.Color("Dark Red"))
 CastHum = menu_font.render("Vs Human: Castling Enabled", True, p.Color("Dark Red"))
-whitePlayer_img = p.image.load('Menu/White.png').convert_alpha()                                                        # img for white pieces
-blackPlayer_img = p.image.load('Menu/Black.png').convert_alpha()                                                        # img for black pieces
+
+logo = p.image.load("Menu/Logo.png")
+
 how_to = p.image.load('Menu/How to.png').convert_alpha()
-Siege = p.image.load('Menu/Siege.png').convert_alpha()
-Arrow = p.image.load('Menu/Arrow.png').convert_alpha()
-start = p.image.load('Menu/Start.png').convert_alpha()                                                                  # img for start button
-logo = p.image.load("Menu/Logo.png")                                                                                    # logo for menu
-white = button.Button(100, 300, whitePlayer_img, 0.6)                                                                   # white button
-black = button.Button(470, 300, blackPlayer_img, 0.6)                                                                   # black button
 how_to = button.Button(650, 50, how_to, 0.5)
-Siege = button.Button(30, 30, Siege, 0.4)
-start = button.Button(340, 430, start, 0.45)                                                                            # start button
-Arrow = button.Button(200, 200, Arrow, 0.6)
+How_to = menu_font.render("How to?", True, p.Color("Dark Red"))
+
+Siege = p.image.load('Menu/Siege.png').convert_alpha()
+Siege = button.Button(80, 45, Siege, 0.3)
+SiegeOn = menu_font.render("Siege Mode: On", True, p.Color("Dark Red"))
+SiegeOff = menu_font.render("Siege Mode: Off", True, p.Color("Dark Red"))
+
+start = p.image.load('Menu/Start.png').convert_alpha()
+start = button.Button(340, 430, start, 0.45)
+
+Arrow = p.image.load('Menu/Arrow.png').convert_alpha()
+Arrow = button.Button(380, 400, Arrow, 0.3)
+Back = menu_font.render("Go Back", True, p.Color("Dark Red"))
+
 miniwP = p.image.load("Mini/wP.png")
 minibP = p.image.load("Mini/bP.png")
 miniwR = p.image.load("Mini/wR.png")
 minibR = p.image.load("Mini/bR.png")
 miniwH = p.image.load("Mini/wH.png")
 miniwC = p.image.load("Mini/wC.png")
+miniwL = p.image.load("Mini/wL.png")
 minibH = p.image.load("Mini/bH.png")
 miniwB = p.image.load("Mini/wB.png")
 minibB = p.image.load("Mini/bB.png")
@@ -62,6 +74,8 @@ minibQ = p.image.load("Mini/bQ.png")
 miniwK = p.image.load("Mini/wK.png")
 minibK = p.image.load("Mini/bK.png")
 minibC = p.image.load("Mini/bC.png")
+minibL = p.image.load("Mini/bL.png")
+
 coordnrfont = p.font.SysFont('Verdana', 24, True, False)
 coordA = coordnrfont.render('a', False, p.Color('Dark Red'))
 coordB = coordnrfont.render('b', False, p.Color('Dark Red'))
@@ -71,6 +85,7 @@ coordE = coordnrfont.render('e', False, p.Color('Dark Red'))
 coordF = coordnrfont.render('f', False, p.Color('Dark Red'))
 coordG = coordnrfont.render('g', False, p.Color('Dark Red'))
 coordH = coordnrfont.render('h', False, p.Color('Dark Red'))
+
 nr1 = coordnrfont.render('1', False, p.Color('Dark Red'))
 nr2 = coordnrfont.render('2', False, p.Color('Dark Red'))
 nr3 = coordnrfont.render('3', False, p.Color('Dark Red'))
@@ -83,7 +98,7 @@ nr8 = coordnrfont.render('8', False, p.Color('Dark Red'))
 
 
 def loadImages():
-    pieces = ['wP', 'wR', 'wH', 'wB', 'wQ', 'wK', 'bP', 'bR', 'bH', 'bB', 'bQ', 'bK', 'wC', 'bC']
+    pieces = ['wP', 'wR', 'wH', 'wB', 'wQ', 'wK', 'bP', 'bR', 'bH', 'bB', 'bQ', 'bK', 'wC', 'bC', 'wL', 'bL']
     for piece in pieces:
         imgs[piece] = p.image.load("Piece/" + piece + ".png")
 
@@ -131,6 +146,8 @@ def drawMoveLog(screen, game, font):
                 piece = miniwK
             elif text[8] == 'C':
                 piece = miniwC
+            elif text[8] == 'L':
+                piece = miniwL
             else:
                 piece = miniwP
         elif game.whiteToMove:
@@ -146,6 +163,8 @@ def drawMoveLog(screen, game, font):
                 piece = minibK
             elif text[25] == 'C' or text[26] == 'C' or text[27] == 'C':
                 piece = minibC
+            elif text[25] == 'L' or text[26] == 'L' or text[27] == 'L':
+                piece = minibL
             else:
                 piece = minibP
         textObject = font.render(text, False, p.Color('Dark Red'))
@@ -254,45 +273,67 @@ def main():
     SiegeCheck = 0
     counterBlack = 1
     counterWhite = 1
+    counterSiege = 1
+    menu_pause = True
+    menu_state = "menu"
     checkGameOver = 0
+    checkDrawStale = 0
     while run_menu:
         menu.fill(p.Color("Dark Blue"))
-        menu.blit(logo, (290, 20))
-        menu.blit(aiW, (160, 270))
-        menu.blit(aiB, (530, 270))
-        if white.draw(menu):
-            playerWhite = True
-            counterWhite += 1
-            if counterWhite % 2 != 0:
-                playerWhite = False
-        if black.draw(menu):
-            playerBlack = True
-            counterBlack += 1
-            if counterBlack % 2 != 0:
-                playerBlack = False
-        if start.draw(menu):
-            run_menu = False
-        if Siege.draw(menu):
-            print("sige")
-            SiegeCheck = 1
-        if how_to.draw(menu):
-            print('AYA')
-        if playerWhite:
-            menu.fill(p.Color("Dark Blue"), (130, 270, 200, 30))
-            menu.blit(humW, (130, 270))
-        if playerBlack:
-            menu.fill(p.Color("Dark Blue"), (500, 270, 200, 30))
-            menu.blit(humB, (500, 270))
-        if playerBlack or playerWhite:
-            menu.blit(CastAI, (270, 230))
-        if playerBlack and playerWhite:
-            menu.fill(p.Color("Dark Blue"), (270, 230, 290, 30))
-            menu.blit(CastHum, (260, 230))
-        for event in p.event.get():
-            if event.type == p.QUIT:
-                p.quit()
-                sys.exit()
-        p.display.update()
+        if menu_pause:
+            if menu_state == "menu":
+                menu.blit(logo, (290, 20))
+                menu.blit(aiW, (160, 270))
+                menu.blit(aiB, (530, 270))
+                menu.blit(SiegeOff, (30, 155))
+                menu.blit(How_to, (650, 150))
+                if white.draw(menu):
+                    playerWhite = True
+                    counterWhite += 1
+                    if counterWhite % 2 != 0:
+                        playerWhite = False
+                if black.draw(menu):
+                    playerBlack = True
+                    counterBlack += 1
+                    if counterBlack % 2 != 0:
+                        playerBlack = False
+                if start.draw(menu):
+                    run_menu = False
+                if Siege.draw(menu):
+                    SiegeCheck = 1
+                    counterSiege += 1
+                if counterSiege % 2 == 0:
+                    menu.fill(p.Color("Dark Blue"), (30, 155, 200, 30))
+                    menu.blit(SiegeOn, (30, 155))
+                if how_to.draw(menu):
+                    menu_pause = True
+                    menu_state = "instr"
+                if playerWhite:
+                    menu.fill(p.Color("Dark Blue"), (130, 270, 200, 30))
+                    menu.blit(humW, (130, 270))
+                if playerBlack:
+                    menu.fill(p.Color("Dark Blue"), (500, 270, 200, 30))
+                    menu.blit(humB, (500, 270))
+                if playerBlack or playerWhite:
+                    menu.blit(CastAI, (270, 230))
+                if playerBlack and playerWhite:
+                    menu.fill(p.Color("Dark Blue"), (270, 230, 290, 30))
+                    menu.blit(CastHum, (260, 230))
+                for event in p.event.get():
+                    if event.type == p.QUIT:
+                        p.quit()
+                        sys.exit()
+                p.display.update()
+            elif menu_state == 'instr':
+                menu.blit(logo, (290, 20))
+                menu.blit(Back, (365, 370))
+                if Arrow.draw(menu):
+                    menu_state = "menu"
+                for event in p.event.get():
+                    if event.type == p.QUIT:
+                        p.quit()
+                        sys.exit()
+                p.display.update()
     screen = p.display.set_mode((board_width + hist_log_width, board_width))
     clock = p.time.Clock()
     screen.fill(p.Color('white'))
@@ -314,7 +355,6 @@ def main():
         playerTurn = (game.whiteToMove and playerWhite) or (not game.whiteToMove and playerBlack)
         for e in p.event.get():
             if e.type == p.QUIT:
-                # print("Check Main")
                 p.quit()
                 sys.exit()
             elif e.type == p.MOUSEBUTTONDOWN:
@@ -327,7 +367,7 @@ def main():
                         playerClicks = []                                                                               # removes it from log of player clicks
                     else:
                         currSqr = (row, col)
-                        playerClicks.append(currSqr)                                                                 # adds 1st and 2nd click
+                        playerClicks.append(currSqr)                                                                    # adds 1st and 2nd click
                         if len(playerClicks) == 2:                                                                     # after the 2nd click these happen
                             if SiegeCheck == 1:
                                 move = Siege_Engine.Move(playerClicks[0], playerClicks[1], game.board)
@@ -337,7 +377,7 @@ def main():
                                 if move == validMoves[i]:
                                     game.makeMove(validMoves[i])
                                     capture = mixer.Sound("Songs&Sounds/Capture.wav")
-                                    capture.set_volume(0.05)
+                                    capture.set_volume(0.1)
                                     mixer.find_channel(True).play(capture)
                                     moveMade = True
                                     animation = True
@@ -353,6 +393,9 @@ def main():
                     gameOver = False
         if not gameOver and not playerTurn:
             AIMove = AI.aiMove(game, validMoves)
+            AIcapture = mixer.Sound("Songs&Sounds/Capture.wav")
+            AIcapture.set_volume(0.1)
+            mixer.find_channel(True).play(AIcapture)
             if AIMove is None:
                 AIMove = AI.findRandomMove(validMoves)
             game.makeMove(AIMove)
@@ -378,7 +421,13 @@ def main():
                 checkGameOver = 1
         elif game.staleMate:
             gameOver = True
-            drawText(screen, 'Draw / Stalemate ')
+            if checkDrawStale == 1:
+                drawText(screen, 'Draw / Stalemate ')
+            elif checkDrawStale == 0:
+                shock = mixer.Sound("Songs&Sounds/Shock.wav")
+                shock.set_volume(0.1)
+                shock.play(0)
+                checkDrawStale = 1
         clock.tick(fps)
         p.display.flip()
 

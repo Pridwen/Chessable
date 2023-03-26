@@ -4,16 +4,16 @@ class GameState:
         # b = black, w = white
         # R = rook , H = horse , B = bishop , Q = queen , K = king , P = pawn
         self.board = [
-            ['bR', 'bH', 'bB', 'bQ', 'bK', 'bB', 'bH', 'bR'],
-            ['bP', 'bC', "bP", "bP", "bP", "bP", "bP", "bP"],
+            ['bR', 'bC', 'bB', 'bQ', 'bK', 'bB', 'bH', 'bR'],
+            ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bL', 'bP'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
-            ['wP', '--', '--', '--', '--', '--', '--', '--'],
-            ['wP', 'wC', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
-            ['wR', 'wH', 'wB', 'wQ', 'wK', 'wB', 'wH', 'wR'],
+            ['--', '--', '--', '--', '--', '--', '--', '--'],
+            ['wP', 'wL', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
+            ['wR', 'wC', 'wB', 'wQ', 'wK', 'wB', 'wH', 'wR'],
         ]
-        self.moveFunctions = {'P': self.getPawnMoves, 'R': self.getRookMoves, 'H': self.getKnightMoves, 'B': self.getBishopMoves, 'Q': self.getQueenMoves, 'K': self.getKingMoves, 'C': self.getCatapultMoves}
+        self.moveFunctions = {'P': self.getPawnMoves, 'R': self.getRookMoves, 'H': self.getKnightMoves, 'B': self.getBishopMoves, 'Q': self.getQueenMoves, 'K': self.getKingMoves, 'C': self.getCatapultMoves, 'L': self.getLanceMoves}
         self.whiteToMove = True                                                                                         # white will always start first
         self.histLog = []                                                                                               # keep track of the moves you made for undo purposes
         self.whiteKingLocation = (7, 4)                                                                                 # coords for the white king
@@ -110,26 +110,32 @@ class GameState:
 
     def getPawnMoves(self, r, c, moves):
         if self.whiteToMove and self.board[r][c][0] == 'w':                                                             # white pawn moves
+            if self.board[r][c-1] == '--':                                                                              # move left
+                moves.append(Move((r, c), (r, c - 1), self.board))
+            if c + 1 <= 7:
+                if self.board[r][c+1] == '--':                                                                          # move right
+                    moves.append(Move((r, c), (r, c + 1), self.board))
             if self.board[r-1][c] == '--':                                                                              # 1 sqr advance
                 moves.append(Move((r, c), (r-1, c), self.board))
-                if r == 6 and self.board[r-2][c] == '--':                                                               # 2 sqr advance
-                    moves.append(Move((r, c), (r-2, c), self.board))
             if c-1 >= 0:
                 if self.board[r-1][c-1][0] == 'b':                                                                      #capturing to left
                     moves.append(Move((r, c), (r-1, c-1), self.board))
                 elif (r-1, c-1) == self.enpassantPossible:
                     moves.append(Move((r, c), (r-1, c-1), self.board, isEnpassant=True))
             if c+1 < len(self.board):
-                if self.board[r-1][c+1][0] == 'b':    #capturing to right
+                if self.board[r-1][c+1][0] == 'b':                                                                      #capturing to right
                     moves.append(Move((r, c), (r-1, c+1), self.board))
                 elif (r-1, c+1) == self.enpassantPossible:
                     moves.append(Move((r, c), (r-1, c+1), self.board, isEnpassant=True))
         else:                                                                                                           # black pawn moves
+            if c-1 >= 0:                                                                                                # move left
+                if self.board[r][c-1] == '--':
+                    moves.append(Move((r, c), (r, c - 1), self.board))
+            if c + 1 <= 7:                                                                                              # move right
+                if self.board[r][c+1] == '--':
+                    moves.append(Move((r, c), (r, c + 1), self.board))
             if self.board[r+1][c] == '--':                                                                              # 1 sqr advance
                 moves.append(Move((r, c), (r+1, c), self.board))
-                if r == 1:
-                    if self.board[r+2][c] == '--':                                                                      # 2 sqr advance
-                        moves.append(Move((r, c), (r+2, c), self.board))
             if c-1 >= 0:
                 if self.board[r+1][c-1][0] == 'w':                                                                      # capturing to left
                     moves.append(Move((r, c), (r+1, c-1), self.board))
@@ -145,7 +151,7 @@ class GameState:
         directions = ((-1, 0), (1, 0), (0, -1), (0, 1))
         enemyColor = 'b' if self.whiteToMove else 'w'
         for d in directions:
-            for i in range(1, 8):
+            for i in range(1, 4):
                 endRow = r + d[0] * i
                 endCol = c + d[1] * i
                 if 0 <= endRow < 8 and 0 <= endCol < 8:
@@ -195,6 +201,31 @@ class GameState:
         self.getBishopMoves(r, c, moves)
 
     def getCatapultMoves(self, r, c, moves):
+        if self.whiteToMove and self.board[r][c][0] == 'w':                                                             # white Catapult
+            if self.board[r][c - 1] == '--':                                                                            # move left
+                moves.append(Move((r, c), (r, c - 1), self.board))
+            if c + 1 <= 7:
+                if self.board[r][c + 1] == '--':                                                                        # move right
+                    moves.append(Move((r, c), (r, c + 1), self.board))
+            if self.board[r - 2][c][0] == 'b':                                                                          # capturing 2 tiles ahead
+                moves.append(Move((r, c), (r - 2, c), self.board))
+            if self.board[r - 3][c][0] == 'b':                                                                          # capturing 3 tiles ahead
+                moves.append(Move((r, c), (r - 3, c), self.board))
+            if self.board[r - 4][c][0] == 'b':                                                                          # capturing 4 tiles ahead
+                moves.append(Move((r, c), (r - 4, c), self.board))
+            if self.board[r - 5][c][0] == 'b':                                                                          # capturing 5 tiles ahead
+                moves.append(Move((r, c), (r - 5, c), self.board))
+            if self.board[7][c] == '--':
+                moves.append(Move((r, c), (7, c), self.board))
+        else:                                                                                                           # black Catapult
+            if c - 1 >= 0:                                                                                              # move left
+                if self.board[r][c - 1] == '--':
+                    moves.append(Move((r, c), (r, c - 1), self.board))
+            if c + 1 <= 7:                                                                                              # right
+                if self.board[r][c + 1] == '--':
+                    moves.append(Move((r, c), (r, c + 1), self.board))
+
+    def getLanceMoves(self, r, c, moves):
         self.getBishopMoves(r, c, moves)
 
     def getKingMoves(self, r, c, moves):
@@ -228,7 +259,7 @@ class Move:
         self.isPawnPromotion = False                                                                                    # pawn promotion
         if (self.pieceMoved == 'wP' and self.endRow == 0) or (self.pieceMoved == 'bP' and self.endRow == 7):            # if you reach the final line for either a black pawn or white pawn you can promote
             self.isPawnPromotion = True
-        self.isEnpassant = isEnpassant                                                                                  # enpassant
+        self.isEnpassant = isEnpassant     # enpassant
         if self.isEnpassant:
             self.pieceCaptured = 'wP' if self.pieceCaptured == 'bP' else 'bP'
 
