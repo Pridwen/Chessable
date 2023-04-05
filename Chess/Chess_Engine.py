@@ -5,7 +5,7 @@ class GameState:
         # R = rook , H = horse , B = bishop , Q = queen , K = king , P = pawn
         self.board = [
             ['bR', 'bH', 'bB', 'bQ', 'bK', 'bB', 'bH', 'bR'],
-            ['bP', 'bP', "bP", "bP", "bP", "bP", "bP", "bP"],
+            ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],

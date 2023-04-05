@@ -1,19 +1,17 @@
 class GameState:
     def __init__(self):
-        # 8 x 8 board with the following symbols:
-        # b = black, w = white
-        # R = rook , H = horse , B = bishop , Q = queen , K = king , P = pawn
         self.board = [
-            ['bR', 'bC', 'bB', 'bQ', 'bK', 'bB', 'bH', 'bR'],
-            ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bL', 'bP'],
+            ['bR', 'bB', 'bV', 'bQ', 'bK', 'bV', 'bB', 'bR'],
+            ['bH', 'bP', 'bP', 'bG', 'bG', 'bP', 'bP', 'bH'],
+            ['--', '--', 'bP', '--', '--', 'bP', '--', '--'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
             ['--', '--', '--', '--', '--', '--', '--', '--'],
-            ['--', '--', '--', '--', '--', '--', '--', '--'],
-            ['--', '--', '--', '--', '--', '--', '--', '--'],
-            ['wP', 'wL', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
-            ['wR', 'wC', 'wB', 'wQ', 'wK', 'wB', 'wH', 'wR'],
+            ['wS', 'wP', '--', 'wP', 'wP', '--', 'wP', 'wS'],
+            ['wP', 'wP', 'wP', 'wG', 'wG', 'wP', 'wP', 'wP'],
+            ['wB', 'wH', 'wS', '--', 'wK', 'wS', 'wH', 'wB'],
         ]
-        self.moveFunctions = {'P': self.getPawnMoves, 'R': self.getRookMoves, 'H': self.getKnightMoves, 'B': self.getBishopMoves, 'Q': self.getQueenMoves, 'K': self.getKingMoves, 'C': self.getCatapultMoves, 'L': self.getLanceMoves}
+        self.moveFunctions = {'P': self.getPawnMoves, 'R': self.getRookMoves, 'H': self.getKnightMoves,
+        'B': self.getBishopMoves, 'Q': self.getQueenMoves, 'K': self.getKingMoves, 'V': self.getValiantMoves, 'S': self.getSwordsmanMoves, 'G': self.getGuardMoves}
         self.whiteToMove = True                                                                                         # white will always start first
         self.histLog = []                                                                                               # keep track of the moves you made for undo purposes
         self.whiteKingLocation = (7, 4)                                                                                 # coords for the white king
@@ -167,7 +165,7 @@ class GameState:
                     break
 
     def getKnightMoves(self, r, c, moves):
-        directions = ((-2, -1), (-2, 1), (-1, -2), (-1, 2,), (1, -2), (1, 2), (2, -1), (2, 1))
+        directions = ((-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1))
         allyColor = 'w' if self.whiteToMove else 'b'
         for d in directions:
             endRow = r + d[0]
@@ -200,23 +198,9 @@ class GameState:
         self.getRookMoves(r, c, moves)
         self.getBishopMoves(r, c, moves)
 
-    def getCatapultMoves(self, r, c, moves):
+    def getValiantMoves(self, r, c, moves):
         if self.whiteToMove and self.board[r][c][0] == 'w':                                                             # white Catapult
-            if self.board[r][c - 1] == '--':                                                                            # move left
-                moves.append(Move((r, c), (r, c - 1), self.board))
-            if c + 1 <= 7:
-                if self.board[r][c + 1] == '--':                                                                        # move right
-                    moves.append(Move((r, c), (r, c + 1), self.board))
-            if self.board[r - 2][c][0] == 'b':                                                                          # capturing 2 tiles ahead
-                moves.append(Move((r, c), (r - 2, c), self.board))
-            if self.board[r - 3][c][0] == 'b':                                                                          # capturing 3 tiles ahead
-                moves.append(Move((r, c), (r - 3, c), self.board))
-            if self.board[r - 4][c][0] == 'b':                                                                          # capturing 4 tiles ahead
-                moves.append(Move((r, c), (r - 4, c), self.board))
-            if self.board[r - 5][c][0] == 'b':                                                                          # capturing 5 tiles ahead
-                moves.append(Move((r, c), (r - 5, c), self.board))
-            if self.board[7][c] == '--':
-                moves.append(Move((r, c), (7, c), self.board))
+            pass
         else:                                                                                                           # black Catapult
             if c - 1 >= 0:                                                                                              # move left
                 if self.board[r][c - 1] == '--':
@@ -224,9 +208,39 @@ class GameState:
             if c + 1 <= 7:                                                                                              # right
                 if self.board[r][c + 1] == '--':
                     moves.append(Move((r, c), (r, c + 1), self.board))
+            if r + 2 <= 7:
+                if self.board[r + 2][c][0] == 'w':                                                                          # capturing 2 tiles ahead
+                    moves.append(Move((r, c), (r + 2, c), self.board))
+            if r + 3 <= 7:
+                if self.board[r + 3][c][0] == 'w':                                                                          # capturing 3 tiles ahead
+                    moves.append(Move((r, c), (r + 3, c), self.board))
+            if r + 4 <= 7:
+                if self.board[r + 4][c][0] == 'w':                                                                          # capturing 4 tiles ahead
+                    moves.append(Move((r, c), (r + 4, c), self.board))
+            if self.board[0][c] == '--':
+                moves.append(Move((r, c), (0, c), self.board))
 
-    def getLanceMoves(self, r, c, moves):
-        self.getBishopMoves(r, c, moves)
+    def getSwordsmanMoves(self, r, c, moves):
+        if self.whiteToMove and self.board[r][c][0] == 'w':
+            directions = ((-1, -1), (-1, 0), (-1, 1), (1, 0))
+        else:
+            directions = ((1, 1), (1, -1), (-1, 0), (1, 0))
+        enemyColor = 'b' if self.whiteToMove else 'w'
+        for d in directions:
+            for i in range(1, 3):
+                endRow = r + d[0] * i
+                endCol = c + d[1] * i
+                if 0 <= endRow < 8 and 0 <= endCol < 8:
+                    endPiece = self.board[endRow][endCol]
+                    if endPiece == '--':
+                        moves.append(Move((r, c), (endRow, endCol), self.board))
+                    elif endPiece[0] == enemyColor:
+                        moves.append(Move((r, c), (endRow, endCol), self.board))
+                        break
+                    else:
+                        break
+                else:
+                    break
 
     def getKingMoves(self, r, c, moves):
         directions = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
@@ -234,6 +248,20 @@ class GameState:
         for i in range(8):
             endRow = r + directions[i][0]
             endCol = c + directions[i][1]
+            if 0 <= endRow < 8 and 0 <= endCol < 8:
+                endPiece = self.board[endRow][endCol]
+                if endPiece[0] != allyColor:
+                    moves.append(Move((r, c), (endRow, endCol), self.board))
+
+    def getGuardMoves(self, r, c, moves):
+        if self.whiteToMove and self.board[r][c][0] == 'w':
+            directions = ((-1, -2), (-1, 2), (-1, -1), (-1, 1), (1, -1), (1, 1))
+        else:
+            directions = ((-1, -1), (-1, 1), (1, 2), (1, -2), (1, 1), (1, -1))
+        allyColor = 'w' if self.whiteToMove else 'b'
+        for d in directions:
+            endRow = r + d[0]
+            endCol = c + d[1]
             if 0 <= endRow < 8 and 0 <= endCol < 8:
                 endPiece = self.board[endRow][endCol]
                 if endPiece[0] != allyColor:

@@ -55,17 +55,76 @@ SiegeOff = menu_font.render("Siege Mode: Off", True, p.Color("Dark Red"))
 start = p.image.load('Menu/Start.png').convert_alpha()
 start = button.Button(340, 430, start, 0.45)
 
+instr_font = p.font.SysFont('Verdana', 18, True, False)
+
 Arrow = p.image.load('Menu/Arrow.png').convert_alpha()
-Arrow = button.Button(380, 400, Arrow, 0.3)
-Back = menu_font.render("Go Back", True, p.Color("Dark Red"))
+Arrow = button.Button(700, 390, Arrow, 0.25)
+Back = instr_font.render("Go Back", True, p.Color("Yellow"))
+
+HorseMoves = p.image.load('Menu/Moves/HorseMoves.png').convert_alpha()
+HorseMoves = p.transform.scale(HorseMoves, (100, 100))
+HorseText = instr_font.render("Knight Moves", True, p.Color("Green"))
+HorsePoints = instr_font.render("4 pts", True, p.Color("Green"))
+HorseUniq = instr_font.render("L Shape", True, p.Color("Green"))
+
+BishopMoves = p.image.load('Menu/Moves/BishopMoves.png').convert_alpha()
+BishopMoves = p.transform.scale(BishopMoves, (100, 100))
+BishopText = instr_font.render("Bishop Moves", True, p.Color("Green"))
+BishopPoints = instr_font.render("4 pts", True, p.Color("Green"))
+BishopUniq = instr_font.render("Diagonal", True, p.Color("Green"))
+
+QueenMoves = p.image.load('Menu/Moves/QueenMoves.png').convert_alpha()
+QueenMoves = p.transform.scale(QueenMoves, (100, 100))
+QueenText = instr_font.render("Queen Moves", True, p.Color("Green"))
+QueenPoints = instr_font.render("9 pts", True, p.Color("Green"))
+QueenUniq = instr_font.render("All ways", True, p.Color("Green"))
+
+RookMoves = p.image.load('Menu/Moves/RookMoves.png').convert_alpha()
+RookMoves = p.transform.scale(RookMoves, (100, 100))
+RookText = instr_font.render("Rook Moves", True, p.Color("Green"))
+RookPoints = instr_font.render("7 pts", True, p.Color("Green"))
+RookUniq = instr_font.render("Rectilinear", True, p.Color("Green"))
+
+KingMoves = p.image.load('Menu/Moves/KingMoves.png').convert_alpha()
+KingMoves = p.transform.scale(KingMoves, (100, 100))
+KingText = instr_font.render("King Moves", True, p.Color("Green"))
+KingPoints = instr_font.render("Checkmate to win", True, p.Color("Green"))
+KingUniq = instr_font.render("1-Adjacent", True, p.Color("Green"))
+
+CastlingMoves = p.image.load('Menu/Moves/CastlingMoves.png').convert_alpha()
+CastlingMoves = p.transform.scale(CastlingMoves, (300, 36))
+CastlingText = instr_font.render("Castling", True, p.Color("Green"))
+
+PawnMove1 = p.image.load('Menu/Moves/PawnMoves1.png').convert_alpha()
+PawnMove2 = p.image.load('Menu/Moves/PawnMoves2.png').convert_alpha()
+PawnMoveSiege = p.image.load('Menu/Moves/PawnMovesSiege.png').convert_alpha()
+PawnMovePassant = p.image.load('Menu/Moves/PawnMovesPassant.png').convert_alpha()
+
+SiegeMode = instr_font.render("Siege rules: White to win, under 60 moves", True, p.Color("Yellow"))
+GuardMoves = p.image.load('Menu/Moves/GuardMoves.png').convert_alpha()
+GuardMoves = p.transform.scale(GuardMoves, (150, 100))
+GuardText = instr_font.render("Guard", True, p.Color("Green"))
+GuardPoints = instr_font.render("3 pts", True, p.Color("Green"))
+
+SwordsMoves = p.image.load('Menu/Moves/SwordsMoves.png').convert_alpha()
+SwordsMoves = p.transform.scale(SwordsMoves, (130, 100))
+SwordsText = instr_font.render("Swordsman", True, p.Color("Green"))
+SwordsPoints = instr_font.render("5 pts", True, p.Color("Green"))
+
+ValiantMoves = p.image.load('Menu/Moves/ValiantMoves.png').convert_alpha()
+ValiantMoves = p.transform.scale(ValiantMoves, (80, 150))
+ValiantText = instr_font.render("Valiant", True, p.Color("Green"))
+ValiantPoints = instr_font.render("2 pts", True, p.Color("Green"))
+#  ValiantMoves
 
 miniwP = p.image.load("Mini/wP.png")
 minibP = p.image.load("Mini/bP.png")
 miniwR = p.image.load("Mini/wR.png")
 minibR = p.image.load("Mini/bR.png")
 miniwH = p.image.load("Mini/wH.png")
-miniwC = p.image.load("Mini/wC.png")
-miniwL = p.image.load("Mini/wL.png")
+miniwS = p.image.load("Mini/wS.png")
+miniwG = p.image.load("Mini/wG.png")
+
 minibH = p.image.load("Mini/bH.png")
 miniwB = p.image.load("Mini/wB.png")
 minibB = p.image.load("Mini/bB.png")
@@ -73,8 +132,9 @@ miniwQ = p.image.load("Mini/wQ.png")
 minibQ = p.image.load("Mini/bQ.png")
 miniwK = p.image.load("Mini/wK.png")
 minibK = p.image.load("Mini/bK.png")
-minibC = p.image.load("Mini/bC.png")
-minibL = p.image.load("Mini/bL.png")
+minibV = p.image.load("Mini/bV.png")
+minibS = p.image.load("Mini/bS.png")
+minibG = p.image.load("Mini/bG.png")
 
 coordnrfont = p.font.SysFont('Verdana', 24, True, False)
 coordA = coordnrfont.render('a', False, p.Color('Dark Red'))
@@ -98,7 +158,7 @@ nr8 = coordnrfont.render('8', False, p.Color('Dark Red'))
 
 
 def loadImages():
-    pieces = ['wP', 'wR', 'wH', 'wB', 'wQ', 'wK', 'bP', 'bR', 'bH', 'bB', 'bQ', 'bK', 'wC', 'bC', 'wL', 'bL']
+    pieces = ['wP', 'wR', 'wH', 'wB', 'wQ', 'wK', 'bP', 'bR', 'bH', 'bB', 'bQ', 'bK', 'bV', 'wS', 'bS', 'wG', 'bG']
     for piece in pieces:
         imgs[piece] = p.image.load("Piece/" + piece + ".png")
 
@@ -144,10 +204,10 @@ def drawMoveLog(screen, game, font):
                 piece = miniwQ
             elif text[8] == 'K':
                 piece = miniwK
-            elif text[8] == 'C':
-                piece = miniwC
-            elif text[8] == 'L':
-                piece = miniwL
+            elif text[8] == 'S':
+                piece = miniwS
+            elif text[8] == 'G':
+                piece = miniwG
             else:
                 piece = miniwP
         elif game.whiteToMove:
@@ -161,10 +221,12 @@ def drawMoveLog(screen, game, font):
                 piece = minibQ
             elif text[25] == 'K' or text[26] == 'K' or text[27] == 'K':
                 piece = minibK
-            elif text[25] == 'C' or text[26] == 'C' or text[27] == 'C':
-                piece = minibC
-            elif text[25] == 'L' or text[26] == 'L' or text[27] == 'L':
-                piece = minibL
+            elif text[25] == 'V' or text[26] == 'V' or text[27] == 'V':
+                piece = minibV
+            elif text[25] == 'S' or text[26] == 'S' or text[27] == 'S':
+                piece = minibS
+            elif text[25] == 'G' or text[26] == 'G' or text[27] == 'G':
+                piece = minibG
             else:
                 piece = minibP
         textObject = font.render(text, False, p.Color('Dark Red'))
@@ -237,7 +299,7 @@ def highlight(screen, game, validMoves, currSqr):
             s.set_alpha(55)
             s.fill(p.Color('Red'))
             screen.blit(s, (c*sqr, r*sqr))
-            s.fill(p.Color('Purple'))                                                                                   #highlight moves of piece
+            s.fill(p.Color((102, 0, 204)))                                                                              #highlight moves of piece
             for move in validMoves:
                 if move.startRow == r and move.startCol == c:
                     screen.blit(s, (move.endCol*sqr, move.endRow*sqr))
@@ -325,8 +387,48 @@ def main():
                         sys.exit()
                 p.display.update()
             elif menu_state == 'instr':
-                menu.blit(logo, (290, 20))
-                menu.blit(Back, (365, 370))
+                menu.blit(Back, (690, 350))
+                menu.blit(HorseText, (30, 10))
+                menu.blit(HorsePoints, (70, 33))
+                menu.blit(HorseMoves, (45, 60))
+                menu.blit(HorseUniq, (50, 160))
+
+                menu.blit(RookText, (195, 10))
+                menu.blit(RookPoints, (225, 33))
+                menu.blit(RookMoves, (200, 60))
+                menu.blit(RookUniq, (200, 160))
+
+                menu.blit(QueenText, (335, 10))
+                menu.blit(QueenPoints, (380, 33))
+                menu.blit(QueenMoves, (350, 60))
+                menu.blit(QueenUniq, (350, 160))
+
+                menu.blit(BishopText, (485, 10))
+                menu.blit(BishopPoints, (530, 33))
+                menu.blit(BishopMoves, (500, 60))
+                menu.blit(BishopUniq, (505, 160))
+
+                menu.blit(KingText, (650, 10))
+                menu.blit(KingPoints, (615, 33))
+                menu.blit(KingMoves, (660, 60))
+                menu.blit(KingUniq, (655, 160))
+
+                menu.blit(CastlingText, (610, 190))
+                menu.blit(CastlingMoves, (490, 230))
+
+                menu.blit(SiegeMode, (30, 230))
+
+                menu.blit(ValiantMoves, (70, 300))
+                menu.blit(ValiantText, (75, 275))
+                menu.blit(ValiantPoints, (88, 450))
+
+                menu.blit(SwordsMoves, (210, 315))
+                menu.blit(SwordsText, (215, 280))
+                menu.blit(SwordsPoints, (245, 415))
+
+                menu.blit(GuardMoves, (400, 315))
+                menu.blit(GuardText, (440, 280))
+                menu.blit(GuardPoints, (450, 415))
                 if Arrow.draw(menu):
                     menu_state = "menu"
                 for event in p.event.get():
@@ -422,7 +524,10 @@ def main():
         elif game.staleMate:
             gameOver = True
             if checkDrawStale == 1:
-                drawText(screen, 'Draw / Stalemate ')
+                if SiegeCheck == 1:
+                    drawText(screen, 'Reinforcement have arrived!')
+                else:
+                    drawText(screen, 'Draw / Stalemate ')
             elif checkDrawStale == 0:
                 shock = mixer.Sound("Songs&Sounds/Shock.wav")
                 shock.set_volume(0.1)
